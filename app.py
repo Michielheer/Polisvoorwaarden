@@ -11,8 +11,14 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 import datetime
 import pandas as pd
 
-# API key direct instellen
-api_key = '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'
+# API key uit environment variabele of .env bestand
+load_dotenv()
+api_key = os.getenv('OPENAI_API_KEY')
+if not api_key:
+    st.error("OpenAI API key niet gevonden. Stel OPENAI_API_KEY in je environment variabelen of .env bestand in.")
+    st.stop()
+st.write(f"DEBUG: API key begint met: {api_key[:8] if api_key else 'NIETS'}")
+
 client = OpenAI(api_key=api_key)
 
 st.set_page_config(page_title="PDF Vergelijker", layout="wide")
