@@ -11,15 +11,13 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 import datetime
 import pandas as pd
 
-# API key uit environment variabele of .env bestand
-load_dotenv()
-api_key = os.getenv('OPENAI_API_KEY')
-if not api_key:
-    st.error("OpenAI API key niet gevonden. Stel OPENAI_API_KEY in je environment variabelen of .env bestand in.")
-    st.stop()
-st.write(f"DEBUG: API key begint met: {api_key[:8] if api_key else 'NIETS'}")
-
-client = OpenAI(api_key=api_key)
+# Eerst proberen uit Streamlit secrets (voor cloud)
+if "OPENAI_API_KEY" in st.secrets:
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
+else:
+    # Anders uit .env (voor lokaal)
+    load_dotenv()
+    openai.api_key = os.getenv("OPENAI_API_KEY")
 
 st.set_page_config(page_title="PDF Vergelijker", layout="wide")
 st.title("PDF Vergelijker")
@@ -443,7 +441,7 @@ if pdf1 and pdf2:
             
             try:
                 # Vraag GPT om de verschillen te analyseren
-                response = client.chat.completions.create(
+                response = openai.chat.completions.create(
                     model="gpt-4o",
                     temperature=0.2,
                     messages=[
